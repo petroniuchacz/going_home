@@ -2,21 +2,26 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:goinghome/picture_column.dart';
 import "dart:math" show pi;
 
 class InfiniteBackground extends StatefulWidget {
   final double radsX;
   final double radsY;
+  final Uint8List imageBytes;
+  final Uint8List flippedImageBytes;
 
   const InfiniteBackground({
     Key key,
     @required this.radsX,
     @required this.radsY,
+    @required this.imageBytes,
+    @required this.flippedImageBytes,
   }) :
         assert(radsX != null),
         assert(radsY != null),
+        assert(imageBytes != null),
+        assert(flippedImageBytes != null),
         super(key: key);
 
   @override
@@ -24,8 +29,8 @@ class InfiniteBackground extends StatefulWidget {
 }
 
 class _InfiniteBackgroundState extends State<InfiniteBackground> {
-  bool _loading;
   Uint8List _imageBytes;
+  Uint8List _flippedImageBytes;
   ScrollController _horizontalScroll;
   ScrollController _verticalScrollLeft;
   ScrollController _verticalScrollRight;
@@ -37,8 +42,8 @@ class _InfiniteBackgroundState extends State<InfiniteBackground> {
     _horizontalScroll = ScrollController();
     _verticalScrollLeft = ScrollController();
     _verticalScrollRight = ScrollController();
-    _loading = true;
-    _init();
+    _imageBytes = widget.imageBytes;
+    _flippedImageBytes = widget.flippedImageBytes;
     super.initState();
   }
 
@@ -54,41 +59,37 @@ class _InfiniteBackgroundState extends State<InfiniteBackground> {
 
   @override
   void didUpdateWidget(InfiniteBackground oldWidget) {
-    if(!_loading) _scroll();
+    _scroll();
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
-    if(!_loading) {
-      return Container(
-        height: 2*_pictureHeight,
-        width: 2* _pictureWidth,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          controller: _horizontalScroll,
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            PictureColumn(
-              key: Key("left"),
-              width: _pictureWidth,
-              height: _pictureHeight,
-              imageBytes: _imageBytes,
-              controller: _verticalScrollLeft,
-            ),
-            PictureColumn(
-              key: Key("right"),
-              width: _pictureWidth,
-              height: _pictureHeight,
-              imageBytes: _imageBytes,
-              controller: _verticalScrollRight,
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Center(child: CircularProgressIndicator());
-    }
+    return Container(
+      height: 2*_pictureHeight,
+      width: 2* _pictureWidth,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        controller: _horizontalScroll,
+        physics: NeverScrollableScrollPhysics(),
+        children: [
+          PictureColumn(
+            key: Key("left"),
+            width: _pictureWidth,
+            height: _pictureHeight,
+            imageBytes: _imageBytes,
+            controller: _verticalScrollLeft,
+          ),
+          PictureColumn(
+            key: Key("right"),
+            width: _pictureWidth,
+            height: _pictureHeight,
+            imageBytes: _flippedImageBytes,
+            controller: _verticalScrollRight,
+          ),
+        ],
+      ),
+    );
   }
 
   void _scroll() {
@@ -117,16 +118,6 @@ class _InfiniteBackgroundState extends State<InfiniteBackground> {
     final correctedRad = rad % (2*pi);
     final offset = origin + toBorder * correctedRad / (2*pi);
     return offset > maxExtent - 100 ? offset - toBorder : offset;
-  }
-
-  void _init() async {
-    final data = (await rootBundle.load('assets/model_in_the_center.jpg'))
-        .buffer
-        .asUint8List();
-    setState(() {
-      _loading = false;
-      _imageBytes = data;
-    });
   }
 }
 
