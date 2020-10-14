@@ -20,7 +20,6 @@ class _GoingHomeWidgetState extends State<GoingHomeWidget> {
   bool _loading;
   Uint8List _background;
   Uint8List _flippedBackground;
-  List<Uint8List> _model;
   double _radX;
   double _radY;
 
@@ -54,15 +53,6 @@ class _GoingHomeWidgetState extends State<GoingHomeWidget> {
               radsX: _radX,
               radsY: _radY,
             ),
-            Model(
-              model: _model,
-              radX: _radX,
-              radY: _radY,
-              correctX: 0,
-              nOfParallels: 38,
-              nOfMeridians: 80,
-              switchXAxisDir: true,
-            ),
           ],
         ),
       ),
@@ -87,20 +77,7 @@ class _GoingHomeWidgetState extends State<GoingHomeWidget> {
         .buffer
         .asUint8List();
 
-    final manifestJson = await DefaultAssetBundle.of(context)
-        .loadString('AssetManifest.json');
-    final images = jsonDecode(manifestJson)
-        .keys
-        .where((String key) => key.startsWith('assets/rw2'));
-    final sortedImgs = List.from(images)..sort();
-    final model = List<Uint8List>();
-    for(final img in sortedImgs) {
-      model.add((await rootBundle.load(img)).buffer.asUint8List());
-      print(img);
-    }
-
     setState(() {
-      _model = model;
       _loading = false;
       _background = backgroundBytes;
       _flippedBackground = flippedBackgroundBytes;
