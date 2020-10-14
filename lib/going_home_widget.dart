@@ -73,7 +73,7 @@ class _GoingHomeWidgetState extends State<GoingHomeWidget> {
         .asUint8List();
 
     final flippedBackgroundBytes =
-        (await rootBundle.load('assets/model_in_the_center_flipped.jpg'))
+        (await rootBundle.load('assets/model_in_the_center.jpg'))
         .buffer
         .asUint8List();
 
