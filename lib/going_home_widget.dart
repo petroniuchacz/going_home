@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 
 import 'infinite_background.dart';
 
@@ -71,7 +73,7 @@ class _GoingHomeWidgetState extends State<GoingHomeWidget> {
         .asUint8List();
 
     final flippedBackgroundBytes =
-        (await rootBundle.load('assets/model_in_the_center - Copy.jpg'))
+        (await rootBundle.load('assets/model_in_the_center_flipped.jpg'))
         .buffer
         .asUint8List();
 
